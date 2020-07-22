@@ -103,7 +103,7 @@ class FlipSymmetricKeypoints(Flip):
         symmetric_keypoints_vertical=(),
         symmetric_keypoints_both=(),
         *args,
-        **kwargs,
+        **kwargs
     ):
         super(FlipSymmetricKeypoints, self).__init__(*args, **kwargs)
 
