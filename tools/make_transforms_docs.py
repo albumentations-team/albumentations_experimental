@@ -5,7 +5,7 @@ from enum import Enum
 import argparse
 
 sys.path.append("..")
-import albumentations as A
+import albumentations as A  # noqa: E402
 import albumentations_experimental  # noqa: E402
 
 
@@ -19,10 +19,10 @@ IGNORED_CLASSES = {
 }
 
 
-READTHEDOCS_TEMPLATE_ALBU = (
-    "[{name}](https://albumentations_experimental.readthedocs.io/en/latest/api/augmentations.html#albumentations_experimental"
+READTHEDOCS_TEMPLATE_ALBU = "[{name}](https://albumentations_experimental.readthedocs.io/en/latest/api/augmentations.html#albumentations_experimental"  # noqa: E501
+READTHEDOCS_TEMPLATE_IMGAUG = (
+    "[{name}](https://albumentations_experimental.readthedocs.io/en/latest/api/imgaug.html#albumentations_experimental"
 )
-READTHEDOCS_TEMPLATE_IMGAUG = "[{name}](https://albumentations_experimental.readthedocs.io/en/latest/api/imgaug.html#albumentations_experimental"
 TRANSFORM_NAME_WITH_LINK_TEMPLATE = READTHEDOCS_TEMPLATE_ALBU + ".augmentations.transforms.{name})"
 IMGAUG_TRANSFORM_NAME_WITH_LINK_TEMPLATE = READTHEDOCS_TEMPLATE_IMGAUG + ".imgaug.transforms.{name})"
 
@@ -63,10 +63,7 @@ def get_transforms_info():
             if hasattr(cls, "apply_to_bbox") and cls.apply_to_bbox is not A.DualTransform.apply_to_bbox:
                 targets.add(Targets.BBOXES)
 
-            if (
-                hasattr(cls, "apply_to_keypoint")
-                and cls.apply_to_keypoint is not A.DualTransform.apply_to_keypoint
-            ):
+            if hasattr(cls, "apply_to_keypoint") and cls.apply_to_keypoint is not A.DualTransform.apply_to_keypoint:
                 targets.add(Targets.KEYPOINTS)
 
             if issubclass(cls, A.DualIAATransform):

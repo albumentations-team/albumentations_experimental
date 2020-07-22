@@ -45,7 +45,8 @@ class VerticalFlipSymmetricKeypoints(VerticalFlip):
     Args:
         p (float): probability of applying the transform. Default: 0.5.
         symmetric_keypoints (tuple, list, dict): tuple of pairs containing indices of symmetric keypoints.
-            Keypoints are considered as symmetric if vertical flip swaps their semantics, e.g. top corner - bottom corner.
+            Keypoints are considered as symmetric if vertical flip swaps their semantics,
+            e.g. top corner - bottom corner.
 
     Targets:
         image, mask, bboxes, keypoints
@@ -77,9 +78,11 @@ class FlipSymmetricKeypoints(Flip):
         symmetric_keypoints_horizontal (tuple, list, dict): tuple of pairs containing indices of symmetric keypoints.
             Keypoints are considered as symmetric if horizontal flip swaps their semantics, e.g. left arm - right arm.
         symmetric_keypoints_vertical (tuple, list, dict): tuple of pairs containing indices of symmetric keypoints.
-            Keypoints are considered as symmetric if vertical flip swaps their semantics, e.g. top corner - bottom corner.
+            Keypoints are considered as symmetric if vertical flip swaps their semantics,
+            e.g. top corner - bottom corner.
         symmetric_keypoints_both (tuple, list, dict): tuple of pairs containing indices of symmetric keypoints.
-            Keypoints are considered as symmetric if vertical and horizontal flip swaps their semantics, e.g. top left corner - bottom right corner.
+            Keypoints are considered as symmetric if vertical and horizontal flip swaps their semantics,
+            e.g. top left corner - bottom right corner.
 
     Targets:
         image, mask, bboxes, keypoints
@@ -88,7 +91,14 @@ class FlipSymmetricKeypoints(Flip):
         uint8, float32
     """
 
-    def __init__(self, symmetric_keypoints_horizontal=(), symmetric_keypoints_vertical=(), symmetric_keypoints_both=(), *args, **kwargs):
+    def __init__(
+        self,
+        symmetric_keypoints_horizontal=(),
+        symmetric_keypoints_vertical=(),
+        symmetric_keypoints_both=(),
+        *args,
+        **kwargs,
+    ):
         super(FlipSymmetricKeypoints, self).__init__(*args, **kwargs)
 
         if isinstance(symmetric_keypoints_horizontal, dict):
@@ -106,8 +116,12 @@ class FlipSymmetricKeypoints(Flip):
         else:
             self.symmetric_keypoints_both = {i: j for i, j in symmetric_keypoints_both}
 
-        if (len(symmetric_keypoints_vertical) or len(symmetric_keypoints_horizontal)) and not len(symmetric_keypoints_both):
-                raise ValueError("symmetric_keypoints_both is empty. Undefined behaviour in case horizontal and vertical flip.")
+        if (len(symmetric_keypoints_vertical) or len(symmetric_keypoints_horizontal)) and not len(
+            symmetric_keypoints_both
+        ):
+            raise ValueError(
+                "symmetric_keypoints_both is empty. Undefined behaviour in case horizontal and vertical flip."
+            )
 
     def apply_to_keypoints(self, keypoints, **params):
         keypoints = super().apply_to_keypoints(keypoints, **params)
@@ -123,7 +137,7 @@ class FlipSymmetricKeypoints(Flip):
         return super(FlipSymmetricKeypoints, self).get_transform_init_args_names() + (
             "symmetric_keypoints_horizontal",
             "symmetric_keypoints_vertical",
-            "symmetric_keypoints_both"
+            "symmetric_keypoints_both",
         )
 
 
@@ -133,7 +147,8 @@ class TransposeSymmetricKeypoints(Transpose):
     Args:
         p (float): probability of applying the transform. Default: 0.5.
         symmetric_keypoints (tuple, list, dict): tuple of pairs containing indices of symmetric keypoints.
-            Keypoints are considered as symmetric if vertical and horizontal flip swaps their semantics, e.g. top left corner - bottom right corner.
+            Keypoints are considered as symmetric if vertical and horizontal flip swaps their semantics,
+            e.g. top left corner - bottom right corner.
 
     Targets:
         image, mask, bboxes, keypoints
@@ -156,9 +171,7 @@ class TransposeSymmetricKeypoints(Transpose):
         return keypoints
 
     def get_transform_init_args_names(self):
-        return super(Transpose, self).get_transform_init_args_names() + (
-            "symmetric_keypoints",
-        )
+        return super(Transpose, self).get_transform_init_args_names() + ("symmetric_keypoints",)
 
 
 if __name__ == "__main__":
