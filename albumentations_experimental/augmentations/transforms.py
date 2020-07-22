@@ -1,5 +1,5 @@
 from albumentations import HorizontalFlip, VerticalFlip, Flip, Transpose
-from albumentations_experimental.augmentations.keypoint_utils import swap_symmetric
+from albumentations_experimental.augmentations.keypoint_utils import swap_symmetric, create_symmetric_keypoints
 
 __all__ = [
     "HorizontalFlipSymmetricKeypoints",
@@ -16,6 +16,8 @@ class HorizontalFlipSymmetricKeypoints(HorizontalFlip):
         p (float): probability of applying the transform. Default: 0.5.
         symmetric_keypoints (tuple, list, dict): tuple of pairs containing indices of symmetric keypoints.
             Keypoints are considered as symmetric if horizontal flip swaps their semantics, e.g. left arm - right arm.
+            If keypoint does not have pair then set as it is own index.
+            Kyepoints length must be divisible to symmetric count. For example 5 symmetric pairs and 15 keypoints.
 
     Targets:
         image, mask, bboxes, keypoints
@@ -26,14 +28,12 @@ class HorizontalFlipSymmetricKeypoints(HorizontalFlip):
 
     def __init__(self, symmetric_keypoints, *args, **kwargs):
         super(HorizontalFlipSymmetricKeypoints, self).__init__(*args, **kwargs)
-        if isinstance(symmetric_keypoints, dict):
-            self.symmetric_keypoints = symmetric_keypoints
-        else:
-            self.symmetric_keypoints = {i: j for i, j in symmetric_keypoints}
+
+        self.symmetric_keypoints, self.symmetric_count = create_symmetric_keypoints(symmetric_keypoints)
 
     def apply_to_keypoints(self, keypoints, **params):
         keypoints = super().apply_to_keypoints(keypoints, **params)
-        return swap_symmetric(keypoints, self.symmetric_keypoints)
+        return swap_symmetric(keypoints, self.symmetric_keypoints, self.symmetric_count)
 
     def get_transform_init_args_names(self):
         return super(HorizontalFlipSymmetricKeypoints, self).get_transform_init_args_names() + ("symmetric_keypoints",)
@@ -47,6 +47,8 @@ class VerticalFlipSymmetricKeypoints(VerticalFlip):
         symmetric_keypoints (tuple, list, dict): tuple of pairs containing indices of symmetric keypoints.
             Keypoints are considered as symmetric if vertical flip swaps their semantics,
             e.g. top corner - bottom corner.
+            If keypoint does not have pair then set as it is own index.
+            Kyepoints length must be divisible to symmetric count. For example 5 symmetric pairs and 15 keypoints.
 
     Targets:
         image, mask, bboxes, keypoints
@@ -57,14 +59,12 @@ class VerticalFlipSymmetricKeypoints(VerticalFlip):
 
     def __init__(self, symmetric_keypoints, *args, **kwargs):
         super(VerticalFlipSymmetricKeypoints, self).__init__(*args, **kwargs)
-        if isinstance(symmetric_keypoints, dict):
-            self.symmetric_keypoints = symmetric_keypoints
-        else:
-            self.symmetric_keypoints = {i: j for i, j in symmetric_keypoints}
+
+        self.symmetric_keypoints, self.symmetric_count = create_symmetric_keypoints(symmetric_keypoints)
 
     def apply_to_keypoints(self, keypoints, **params):
         keypoints = super().apply_to_keypoints(keypoints, **params)
-        return swap_symmetric(keypoints, self.symmetric_keypoints)
+        return swap_symmetric(keypoints, self.symmetric_keypoints, self.symmetric_count)
 
     def get_transform_init_args_names(self):
         return super(VerticalFlip, self).get_transform_init_args_names() + ("symmetric_keypoints",)
@@ -77,12 +77,18 @@ class FlipSymmetricKeypoints(Flip):
         p (float): probability of applying the transform. Default: 0.5.
         symmetric_keypoints_horizontal (tuple, list, dict): tuple of pairs containing indices of symmetric keypoints.
             Keypoints are considered as symmetric if horizontal flip swaps their semantics, e.g. left arm - right arm.
+            If keypoint does not have pair then set as it is own index.
+            Kyepoints length must be divisible to symmetric count. For example 5 symmetric pairs and 15 keypoints.
         symmetric_keypoints_vertical (tuple, list, dict): tuple of pairs containing indices of symmetric keypoints.
             Keypoints are considered as symmetric if vertical flip swaps their semantics,
             e.g. top corner - bottom corner.
+            If keypoint does not have pair then set as it is own index.
+            Kyepoints length must be divisible to symmetric count. For example 5 symmetric pairs and 15 keypoints.
         symmetric_keypoints_both (tuple, list, dict): tuple of pairs containing indices of symmetric keypoints.
             Keypoints are considered as symmetric if vertical and horizontal flip swaps their semantics,
             e.g. top left corner - bottom right corner.
+            If keypoint does not have pair then set as it is own index.
+            Kyepoints length must be divisible to symmetric count. For example 5 symmetric pairs and 15 keypoints.
 
     Targets:
         image, mask, bboxes, keypoints
@@ -101,36 +107,28 @@ class FlipSymmetricKeypoints(Flip):
     ):
         super(FlipSymmetricKeypoints, self).__init__(*args, **kwargs)
 
-        if isinstance(symmetric_keypoints_horizontal, dict):
-            self.symmetric_keypoints_horizontal = symmetric_keypoints_horizontal
-        else:
-            self.symmetric_keypoints_horizontal = {i: j for i, j in symmetric_keypoints_horizontal}
-
-        if isinstance(symmetric_keypoints_vertical, dict):
-            self.symmetric_keypoints_vertical = symmetric_keypoints_vertical
-        else:
-            self.symmetric_keypoints_vertical = {i: j for i, j in symmetric_keypoints_vertical}
-
-        if isinstance(symmetric_keypoints_both, dict):
-            self.symmetric_keypoints_both = symmetric_keypoints_both
-        else:
-            self.symmetric_keypoints_both = {i: j for i, j in symmetric_keypoints_both}
-
-        if (len(symmetric_keypoints_vertical) or len(symmetric_keypoints_horizontal)) and not len(
+        self.symmetric_keypoints_horizontal, self.symmetric_keypoints_horizontal_count = create_symmetric_keypoints(
+            symmetric_keypoints_horizontal
+        )
+        self.symmetric_keypoints_vertical, self.symmetric_keypoints_vertical_count = create_symmetric_keypoints(
+            symmetric_keypoints_vertical
+        )
+        self.symmetric_keypoints_both, self.symmetric_keypoints_both_count = create_symmetric_keypoints(
             symmetric_keypoints_both
-        ):
-            raise ValueError(
-                "symmetric_keypoints_both is empty. Undefined behaviour in case horizontal and vertical flip."
-            )
+        )
 
     def apply_to_keypoints(self, keypoints, **params):
         keypoints = super().apply_to_keypoints(keypoints, **params)
         if params["d"] == 1:
-            keypoints = swap_symmetric(keypoints, self.symmetric_keypoints_horizontal)
+            keypoints = swap_symmetric(
+                keypoints, self.symmetric_keypoints_horizontal, self.symmetric_keypoints_horizontal_count
+            )
         elif params["d"] == 0:
-            keypoints = swap_symmetric(keypoints, self.symmetric_keypoints_vertical)
+            keypoints = swap_symmetric(
+                keypoints, self.symmetric_keypoints_vertical, self.symmetric_keypoints_vertical_count
+            )
         else:
-            keypoints = swap_symmetric(keypoints, self.symmetric_keypoints_both)
+            keypoints = swap_symmetric(keypoints, self.symmetric_keypoints_both, self.symmetric_keypoints_both_count)
         return keypoints
 
     def get_transform_init_args_names(self):
@@ -149,6 +147,8 @@ class TransposeSymmetricKeypoints(Transpose):
         symmetric_keypoints (tuple, list, dict): tuple of pairs containing indices of symmetric keypoints.
             Keypoints are considered as symmetric if vertical and horizontal flip swaps their semantics,
             e.g. top left corner - bottom right corner.
+            If keypoint does not have pair then set as it is own index.
+            Kyepoints length must be divisible to symmetric count. For example 5 symmetric pairs and 15 keypoints.
 
     Targets:
         image, mask, bboxes, keypoints
@@ -160,14 +160,11 @@ class TransposeSymmetricKeypoints(Transpose):
     def __init__(self, symmetric_keypoints=(), *args, **kwargs):
         super(Transpose, self).__init__(*args, **kwargs)
 
-        if isinstance(symmetric_keypoints, dict):
-            self.symmetric_keypoints = symmetric_keypoints
-        else:
-            self.symmetric_keypoints = {i: j for i, j in symmetric_keypoints}
+        self.symmetric_keypoints, self.symmetric_count = create_symmetric_keypoints(symmetric_keypoints)
 
     def apply_to_keypoints(self, keypoints, **params):
         keypoints = super().apply_to_keypoints(keypoints, **params)
-        keypoints = swap_symmetric(keypoints, self.symmetric_keypoints)
+        keypoints = swap_symmetric(keypoints, self.symmetric_keypoints, self.symmetric_count)
         return keypoints
 
     def get_transform_init_args_names(self):
