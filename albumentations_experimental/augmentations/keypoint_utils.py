@@ -1,3 +1,6 @@
+import warnings
+
+
 def create_symmetric_keypoints(values):
     values = dict(values)
 
@@ -7,10 +10,14 @@ def create_symmetric_keypoints(values):
         _set.add(item)
     count = len(_set)
 
-    if not all([(i in _set) for i in range(count)]):
-        raise ValueError(
-            "Values in symmetric_keypoints must be in range(len(unique(symmetric_keypoints))) without skips."
-        )
+    if max(_set) != count - 1:
+        without_pair = []
+        for i in range(count):
+            if i not in _set:
+                values[i] = i
+                without_pair.append(i)
+        warnings.warn("Found points without pairs in symmetric transform: " + str(without_pair))
+        count += len(without_pair)
 
     return values, count
 
