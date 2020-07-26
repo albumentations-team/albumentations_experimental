@@ -1,6 +1,6 @@
 # Albumentations Experimental
 
-Albumentations Experimental provides experimental and cutting edge augmentation techniques on top of the [Albumentations](https://github.com/albumentations-team/albumentations) library.
+The Albumentations Experimental library provides experimental and cutting edge augmentation techniques on top [Albumentations](https://github.com/albumentations-team/albumentations).
 
 ## Why a separate library
 
@@ -39,6 +39,7 @@ from albumentations_experimental import FlipSymmetricKeypoints
 Documentation is available at [https://albumentations.ai/docs/experimental/overview/](https://albumentations.ai/docs/experimental/overview/)
 
 ## List of augmentations and their supported targets
+
 ### Spatial-level transforms
 
 | Transform                                                                                                                                                                                                     | Image | Masks | BBoxes | Keypoints |
