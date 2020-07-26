@@ -36,11 +36,10 @@ def parse_args():
 
 
 def make_augmentation_docs_link(cls):
-    cls_fullname = cls.__module__ + "." + cls.__name__
     return (
-        f"[{cls.__name__}]"
-        f"(https://albumentations.ai/docs/experimental/api_reference/augmentations/transforms/#{cls_fullname})"
-    )
+        "[{cls_name}]"
+        "(https://albumentations.ai/docs/experimental/api_reference/augmentations/transforms/#{cls_fullname})"
+    ).format(cls_name=cls.__name__, cls_fullname=cls.__module__ + "." + cls.__name__)
 
 
 def make_separator(width, align_center):
