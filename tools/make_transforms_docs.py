@@ -19,14 +19,6 @@ IGNORED_CLASSES = {
 }
 
 
-READTHEDOCS_TEMPLATE_ALBU = "[{name}](https://albumentations_experimental.readthedocs.io/en/latest/api/augmentations.html#albumentations_experimental"  # noqa: E501
-READTHEDOCS_TEMPLATE_IMGAUG = (
-    "[{name}](https://albumentations_experimental.readthedocs.io/en/latest/api/imgaug.html#albumentations_experimental"
-)
-TRANSFORM_NAME_WITH_LINK_TEMPLATE = READTHEDOCS_TEMPLATE_ALBU + ".augmentations.transforms.{name})"
-IMGAUG_TRANSFORM_NAME_WITH_LINK_TEMPLATE = READTHEDOCS_TEMPLATE_IMGAUG + ".imgaug.transforms.{name})"
-
-
 class Targets(Enum):
     IMAGE = "Image"
     MASKS = "Masks"
@@ -41,6 +33,14 @@ def parse_args():
     check_parser = subparsers.add_parser("check")
     check_parser.add_argument("filepath", type=str, help="Path to a file that should be checked")
     return parser.parse_args()
+
+
+def make_augmentation_docs_link(cls):
+    cls_fullname = cls.__module__ + "." + cls.__name__
+    return (
+        f"[{cls.__name__}]"
+        f"(https://albumentations.ai/docs/experimental/api_reference/augmentations/transforms/#{cls_fullname})"
+    )
 
 
 def make_separator(width, align_center):
@@ -74,11 +74,7 @@ def get_transforms_info():
                 targets.add(Targets.BBOXES)
                 targets.add(Targets.KEYPOINTS)
 
-            docs_link = None
-            if cls.__module__ == "albumentations_experimental.augmentations.transforms":
-                docs_link = TRANSFORM_NAME_WITH_LINK_TEMPLATE.format(name=name)
-            elif cls.__module__ == "albumentations_experimental.imgaug.transforms":
-                docs_link = IMGAUG_TRANSFORM_NAME_WITH_LINK_TEMPLATE.format(name=name)
+            docs_link = make_augmentation_docs_link(cls)
 
             transforms_info[name] = {
                 "targets": targets,
@@ -143,9 +139,9 @@ def check_docs(filepath, image_only_transforms_links, dual_transforms_table):
         "Docs for the following transform types are outdated: {outdated_docs_headers}. "
         "Generate new docs by executing the `python tools/{py_file} make` command "
         "and paste them to {filename}.\n"
-        "# Image only transforms lines not in file:\n"
+        "# Pixel-level transforms lines not in file:\n"
         "{image_only_lines}\n"
-        "# Dual transforms lines not in file:\n"
+        "# Spatial-level lines not in file:\n"
         "{dual_lines}".format(
             outdated_docs_headers=", ".join(outdated_docs),
             py_file=os.path.basename(os.path.realpath(__file__)),
