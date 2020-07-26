@@ -137,11 +137,11 @@ def check_docs(filepath, image_only_transforms_links, dual_transforms_table):
 
     raise ValueError(
         "Docs for the following transform types are outdated: {outdated_docs_headers}. "
-        "Generate new docs by executing the `python tools/{py_file} make` command "
+        "Generate the new docs by executing the `python tools/{py_file} make` command "
         "and paste them to {filename}.\n"
-        "# Pixel-level transforms lines not in file:\n"
+        "# Pixel-level transforms lines not in the file:\n"
         "{image_only_lines}\n"
-        "# Spatial-level lines not in file:\n"
+        "# Spatial-level transforms lines not in the file:\n"
         "{dual_lines}".format(
             outdated_docs_headers=", ".join(outdated_docs),
             py_file=os.path.basename(os.path.realpath(__file__)),
