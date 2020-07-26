@@ -39,7 +39,6 @@ from albumentations_experimental import FlipSymmetricKeypoints
 Documentation is available at [https://albumentations.ai/docs/experimental/overview/](https://albumentations.ai/docs/experimental/overview/)
 
 ## List of augmentations and their supported targets
-
 ### Spatial-level transforms
 
 | Transform                                                                                                                                                                                                     | Image | Masks | BBoxes | Keypoints |
