@@ -1,4 +1,7 @@
 # Albumentations Experimental
+[![PyPI version](https://badge.fury.io/py/albumentations-experimental.svg)](https://badge.fury.io/py/albumentations_experimental)
+![CI](https://github.com/albumentations-team/albumentations_experimental/workflows/CI/badge.svg)
+
 
 The Albumentations Experimental library provides experimental and cutting edge augmentation techniques on top [Albumentations](https://github.com/albumentations-team/albumentations).
 
@@ -21,7 +24,7 @@ Albumentations Experimental requires Python 3.5 or higher.
 pip install -U albumentations_experimental
 ```
 
-#### Install the latest version from the master's branch on GitHub
+#### Install the latest version from the master branch on GitHub
 ```Bash
 pip install -U git+https://github.com/albumentations-team/albumentations-experimental
 ```
