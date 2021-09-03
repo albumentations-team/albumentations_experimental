@@ -65,9 +65,6 @@ def get_transforms_info():
             if hasattr(cls, "apply_to_keypoint") and cls.apply_to_keypoint is not A.DualTransform.apply_to_keypoint:
                 targets.add(Targets.KEYPOINTS)
 
-            if issubclass(cls, A.DualIAATransform):
-                targets.update({Targets.BBOXES, Targets.KEYPOINTS})
-
             if issubclass(cls, A.Lambda):
                 targets.add(Targets.MASKS)
                 targets.add(Targets.BBOXES)
