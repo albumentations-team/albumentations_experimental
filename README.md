@@ -16,7 +16,7 @@ Beware, that each new version of Albumentations Experimental may contain backwar
 When features in Albumentations Experimental are mature enough, we will port them to the main library with all our usual policies such as rigorous testing, extensive documentation, and stable behavior.
 
 ## Installation
-Albumentations Experimental requires Python 3.5 or higher.
+Albumentations Experimental requires Python 3.6 or higher.
 
 #### Install the latest stable version from PyPI
 
