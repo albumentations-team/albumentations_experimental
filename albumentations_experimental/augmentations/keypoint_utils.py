@@ -41,6 +41,6 @@ def swap_symmetric(keypoints, symmetric, symmetric_count):
 
         if x2 is not None:
             x2 += j * symmetric_count
-            keypoints[x1], keypoints[x2] = keypoints[x2], keypoints[x1]
+            keypoints[x1], keypoints[x2] = keypoints[x2][:4] + keypoints[x1][4:], keypoints[x1][:4] + keypoints[x2][4:]
 
     return keypoints
